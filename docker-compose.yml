@@ -14,7 +14,7 @@ services:
     logging: *default-logging
 
   nightscout:
-    image: kkdockerimages/osl-ns:dev-osc
+    image: nightscout/cgm-remote-monitor:latest
     container_name: nightscout
     restart: always
     depends_on:
