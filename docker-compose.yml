@@ -1,10 +1,9 @@
-version: '3'
+version: "3"
 
-x-logging:
-  &default-logging
+x-logging: &default-logging
   options:
-    max-size: '10m'
-    max-file: '5'
+    max-size: "10m"
+    max-file: "5"
   driver: json-file
 
 services:
@@ -15,18 +14,18 @@ services:
     logging: *default-logging
 
   nightscout:
-    image: nightscout/cgm-remote-monitor:latest
+    image: kkdockerimages/osl-ns:dev-osc
     container_name: nightscout
     restart: always
     depends_on:
       - mongo
     labels:
-      - 'traefik.enable=true'
+      - "traefik.enable=true"
       # Change the below Host from `localhost` to be the web address where Nightscout is running.
       # Also change the email address in the `traefik` service below.
-      - 'traefik.http.routers.nightscout.rule=Host(`localhost`)'
-      - 'traefik.http.routers.nightscout.entrypoints=websecure'
-      - 'traefik.http.routers.nightscout.tls.certresolver=le'
+      - "traefik.http.routers.nightscout.rule=Host(`localhost`)"
+      - "traefik.http.routers.nightscout.entrypoints=websecure"
+      - "traefik.http.routers.nightscout.tls.certresolver=le"
     logging: *default-logging
     environment:
       ### Variables for the container
@@ -36,7 +35,7 @@ services:
       ### Overridden variables for Docker Compose setup
       # The `nightscout` service can use HTTP, because we use `traefik` to serve the HTTPS
       # and manage TLS certificates
-      INSECURE_USE_HTTP: 'true'
+      INSECURE_USE_HTTP: "true"
 
       # For all other settings, please refer to the Environment section of the README
       ### Required variables
@@ -65,22 +64,22 @@ services:
 
   traefik:
     image: traefik:latest
-    container_name: 'traefik'
+    container_name: "traefik"
     command:
-      - '--providers.docker=true'
-      - '--providers.docker.exposedbydefault=false'
-      - '--entrypoints.web.address=:80'
-      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
-      - '--entrypoints.websecure.address=:443'
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.le.acme.httpchallenge=true"
       - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
-      - '--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json'
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
       # Change the below to match your email address
-      - '--certificatesresolvers.le.acme.email=example@example.com'
+      - "--certificatesresolvers.le.acme.email=example@example.com"
     ports:
-      - '443:443'
-      - '80:80'
+      - "443:443"
+      - "80:80"
     volumes:
-      - './letsencrypt:/letsencrypt'
-      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
     logging: *default-logging
